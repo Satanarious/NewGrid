@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "NewGrid",
+  "version": "1.0.0",
+  "description": "Local-only new tab page with icon folders, search, wallpapers and backup. No accounts, just you and your privacy.",
+  "minimum_chrome_version": "105",
+  "chrome_url_overrides": {
+    "newtab": "newtab/index.html"
+  },
+  "action": {
+    "default_title": "Add this page to NewGrid",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "alarms",
+    "notifications",
+    "activeTab"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'"
+  }
+}

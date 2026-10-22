@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NewGrid</title>
+  <style>
+    @font-face { font-family: 'Outfit'; src: url('../fonts/Outfit.ttf') format('truetype'); font-weight: 100 900; }
+    @font-face { font-family: 'Inter'; src: url('../fonts/Inter.ttf') format('truetype'); font-weight: 100 900; }
+    body { width: 300px; margin: 0; padding: 14px; font: 13px 'Inter', system-ui, sans-serif; background: #2f3447; color: #ddd; }
+    h1, button { font-family: 'Outfit', system-ui, sans-serif; }
+    h1 { font-size: 15px; margin: 0 0 10px; }
+    label { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+    input, select { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; padding: 6px 8px; color: inherit; font: inherit; }
+    button { padding: 7px 12px; border-radius: 6px; background: #4a90e2; color: #fff; border: 0; cursor: pointer; }
+    button.secondary { background: rgba(255, 255, 255, 0.12); }
+    .row { display: flex; gap: 8px; justify-content: space-between; align-items: center; }
+    #status { min-height: 16px; margin-top: 8px; opacity: 0.85; }
+  </style>
+</head>
+<body>
+  <h1>Add this page</h1>
+  <form id="add-form">
+    <label>Name <input id="name" required></label>
+    <label>URL <input id="url" required></label>
+    <div class="row">
+      <button type="submit">Add to NewGrid</button>
+      <button type="button" id="open-newtab" class="secondary">Open new tab</button>
+    </div>
+  </form>
+  <div id="status" role="status"></div>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

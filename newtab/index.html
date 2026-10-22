@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>New Tab</title>
+  <link rel="stylesheet" href="newtab.css">
+</head>
+<body>
+  <div id="wallpaper">
+    <img id="wp-img" alt="">
+    <video id="wp-video" muted loop playsinline></video>
+  </div>
+  <div id="mask"></div>
+
+  <header id="topbar">
+    <div class="top-actions">
+      <button id="btn-add" class="icon-btn glass" title="Add site" aria-label="Add site">+</button>
+      <button id="btn-settings" class="icon-btn glass" title="Settings" aria-label="Settings">⚙</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="search-wrap">
+      <div id="type-tabs" class="type-tabs"></div>
+      <form id="search-form" class="search-card" autocomplete="off">
+        <div class="search-engine">
+          <button type="button" id="engine-btn" class="engine-btn">Google ▾</button>
+          <div id="engine-menu" class="menu glass hide"></div>
+        </div>
+        <input id="search-input" type="search" placeholder="Enter search" aria-label="Search">
+        <button id="search-submit" class="search-submit" type="submit">Search</button>
+      </form>
+    </div>
+
+    <section id="site-box" class="site-box">
+      <div id="site-items" class="site-items"></div>
+    </section>
+    <div id="site-dots" class="site-dots"></div>
+  </main>
+
+  <button id="prev" class="pager" aria-label="Previous page">‹</button>
+  <button id="next" class="pager" aria-label="Next page">›</button>
+
+  <aside id="drawer" class="drawer glass-strong" aria-label="Settings">
+    <header class="drawer-head">
+      <h2>Settings</h2>
+      <button class="close icon-btn glass" aria-label="Close">×</button>
+    </header>
+    <div class="drawer-body"></div>
+  </aside>
+
+  <div id="overlay-plugin" class="overlay hide">
+    <div class="box plugin-box">
+      <header class="plugin-head">
+        <h2 class="plugin-title"></h2>
+        <button class="close icon-btn glass" aria-label="Close">×</button>
+      </header>
+      <div class="plugin-body"></div>
+    </div>
+  </div>
+
+  <div id="overlay-folder" class="overlay hide">
+    <div class="box folder-box-modal">
+      <header class="plugin-head">
+        <input class="folder-name" aria-label="Folder name">
+        <button class="close icon-btn glass" aria-label="Close">×</button>
+      </header>
+      <p class="folder-hint">Right-click an icon to edit or delete it. Drag to reorder.</p>
+      <div class="folder-items"></div>
+      <footer class="folder-actions">
+        <button class="fbtn open-all" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg>
+          Open all
+        </button>
+        <button class="fbtn release" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9l8-5 8 5-8 5zM4 15l8 5 8-5"/></svg>
+          Release
+        </button>
+        <button class="fbtn delete-folder" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+          Delete
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <div id="overlay-editor" class="overlay hide">
+    <div class="box editor-box">
+      <header class="plugin-head">
+        <h2 class="editor-title">Add site</h2>
+        <button class="close icon-btn glass" aria-label="Close">×</button>
+      </header>
+      <div class="editor-body">
+        <div class="ed-left">
+          <div id="ed-stage" class="ed-stage" title="Scroll to zoom, drag to move, double-click to fill">
+            <img id="ed-full" class="ed-full hide" alt="">
+            <div id="ed-tile" class="ed-tile">
+              <img id="ed-tile-img" class="ed-tile-img hide" alt="">
+              <span id="ed-tile-text" class="ed-tile-text hide"></span>
+            </div>
+            <p id="ed-empty" class="ed-empty">Choose an image or text to make this icon</p>
+          </div>
+          <div class="ed-toolbar ed-zoom-only">
+            <button type="button" id="ed-fit" class="ed-image-only" title="Show the whole picture">Fit</button>
+            <button type="button" id="ed-fill" class="ed-image-only" title="Fill the icon">Fill</button>
+            <span class="spacer"></span>
+            <button type="button" id="ed-zoom-out" class="zoom-btn" title="Zoom out">−</button>
+            <span id="ed-zoom-label" class="ed-zoom-label">100%</span>
+            <button type="button" id="ed-zoom-in" class="zoom-btn" title="Zoom in">+</button>
+          </div>
+          <p id="ed-hint" class="ed-hint-text ed-image-only">Scroll to zoom in and out at the cursor. Drag to move. Arrow keys nudge. The faded part is hidden.</p>
+          <p class="ed-hint-text ed-site-only">Scroll to zoom and drag to move the website icon. Double-click to reset.</p>
+        </div>
+        <div class="ed-right">
+          <div class="ed-preview">
+            <figure><div class="ed-prev-frame lg"><img id="ed-preview-lg" alt=""></div><figcaption>Icon</figcaption></figure>
+            <figure><div class="ed-prev-frame sm"><img id="ed-preview-sm" alt=""></div><figcaption>Small</figcaption></figure>
+          </div>
+          <div class="seg">
+            <button type="button" data-mode="site">Website icon</button>
+            <button type="button" data-mode="image">Image</button>
+            <button type="button" data-mode="text">Text</button>
+          </div>
+          <div class="ed-site-only hint">The icon is fetched from the website. Choose Image or Text to use your own.</div>
+          <div class="ed-image-only ed-link-row">
+            <label class="btn-file">Choose an image…<input type="file" id="ed-file" accept="image/*" hidden></label>
+            <div class="link-row">
+              <input id="ed-link" placeholder="or paste a picture link" autocomplete="off">
+              <button type="button" id="ed-link-use">Use link</button>
+            </div>
+          </div>
+          <div class="ed-text-controls ed-text-only">
+            <input id="ed-text" maxlength="4" placeholder="Up to 4 characters" autocomplete="off">
+            <label class="colour">Colour <input type="color" id="ed-text-color" value="#ffffff"></label>
+          </div>
+          <div class="ed-palette-wrap">
+            <span class="label">Background behind the icon</span>
+            <div id="ed-palette" class="palette"></div>
+          </div>
+          <form id="editor-form" class="stack">
+            <label>Website name <input name="name" required></label>
+            <label>URL <input name="target" placeholder="https://example.com"></label>
+            <div class="row end">
+              <button type="button" class="delete-site danger hide">Delete</button>
+              <button type="button" class="cancel">Cancel</button>
+              <button type="submit" class="primary">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="overlay-confirm" class="overlay hide">
+    <div class="box confirm-box">
+      <h2 class="confirm-title"></h2>
+      <p class="confirm-message"></p>
+      <div class="row end">
+        <button class="confirm-cancel">Cancel</button>
+        <button class="confirm-ok">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" role="status"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
