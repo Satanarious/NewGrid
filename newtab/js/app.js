@@ -1,7 +1,6 @@
 import { state, hooks, loadAll, listenForChanges, saveSearch } from './context.js';
 import { renderGrid, bindGrid, goToPage, turnPage, openEditor, closeFolder } from './grid.js';
 import { closeIconEditor } from './icon-editor.js';
-import { closePlugin, isPluginOpen, bindPlugins } from './panels.js';
 import { bindDrawerShell, closeDrawer, isDrawerOpen, refreshWallpaperCard } from './drawer.js';
 import { $, esc } from '../../shared/util.js';
 import { allEngines, findEngine, availableTypes, engineTemplate, buildSearchUrl, SEARCH_TYPE_LABELS } from '../../shared/search.js';
@@ -150,7 +149,6 @@ function bindChrome() {
     if (e.key === 'Escape') {
       if (!$('#overlay-editor').classList.contains('hide')) return closeIconEditor();
       if (!$('#overlay-folder').classList.contains('hide')) return closeFolder();
-      if (isPluginOpen()) return closePlugin();
       if (isDrawerOpen()) return closeDrawer();
     }
     if (e.target.matches('input, textarea, select') || document.querySelector('.overlay:not(.hide)')) return;
@@ -161,7 +159,6 @@ function bindChrome() {
   document.querySelectorAll('.overlay').forEach((ov) => ov.addEventListener('click', (e) => {
     if (e.target !== ov) return;
     if (ov.id === 'overlay-folder') closeFolder();
-    if (ov.id === 'overlay-plugin') closePlugin();
   }));
 }
 
@@ -186,7 +183,6 @@ async function boot() {
 
   initWallpaper();
   bindGrid();
-  bindPlugins();
   bindDrawerShell();
   bindSearch();
   bindChrome();

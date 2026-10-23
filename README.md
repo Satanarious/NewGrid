@@ -43,7 +43,7 @@ A local-only Chrome/Edge new tab extension which allows for a grid-based layout 
 | Icon grid | Pages of icons, dots and arrows, wheel and keyboard paging, drag to reorder, drag onto an icon to make a folder, drag onto a folder to add to it, right-click to edit |
 | Icon sizing | **Icon size** scales the glyph (favicon or letter). **Icon background size** scales the tile. **Icon rounded corners** goes from square to a full circle |
 | Grid layout | Default 3 × 6. With **Customize layout** on you control rows, columns, column spacing and row spacing (0 to 160 px each) |
-| Folders | Flip-open dialog, rename, open all, release and delete (both confirmed). The tile shows the first nine icons in a centred 3 × 3 grid at 80% size |
+| Folders | Flip-open dialog, rename, open all, release and delete (both confirmed). The dialog shows up to 6 × 4 icons and scrolls beyond that. The tile shows the first nine icons in a centred 3 × 3 grid at 80% size |
 | Sites | Add (URL, name, favicon, or colour and two-letter text, or a custom image up to 2 MB), edit, delete |
 | Settings | A right-side panel that slides in from the cog. Each group is its own card: Links, View, Layout, Icons, Search box, Font, Wallpaper, Custom search engines, Permissions, Backup |
 | Search | Built-in engines (Google, Bing, DuckDuckGo, Yahoo, Baidu, Yandex, Sogou, 360) in the engine menu. Result types (Web, Images, News, Videos, Maps) appear above the search box. Custom engines with `%s` are added in Settings. Box size can go from half to four times the default |
@@ -57,7 +57,7 @@ A local-only Chrome/Edge new tab extension which allows for a grid-based layout 
 
 ```
 manifest.json            MV3 manifest (newtab override, popup, service worker)
-background.js            service worker: to-do reminder alarms and notifications
+background.js            service worker: imports the first-run defaults on install
 shared/                  pure logic used by the pages and tests
   defaults.js            storage keys, default settings, built-in engines, starter icons
   settings.js            merge defaults, apply a change, effective grid geometry
@@ -74,7 +74,6 @@ newtab/
   js/drawer.js           the settings side panel and all its cards
   js/wallpaper.js        wallpaper files, links, switching and playback
   js/icon-editor.js      icon editor: website icon, image or text, with crop preview
-  js/panels.js           notes and to-dos pages
   js/confirm.js          in-page confirmation dialog
   js/launcher.js         what an icon does when opened
   js/context.js          shared state and store load/save
@@ -99,8 +98,12 @@ node tests/screenshots.mjs # writes screenshots to ./screenshots
 
 The browser tests use `puppeteer-core`. Chrome 137+ branded builds removed `--load-extension`, so the tests default to Microsoft Edge. Set `CHROME_PATH` to another Chromium build that still supports it, such as Chrome for Testing.
 
+## License
+
+MIT. See [LICENSE](LICENSE).
+
 ## Notes
 - `default.json` (a backup file) is imported silently the first time the extension is installed. It runs once, and only on a fresh install. Replace the file to change what new users start with. `tests/e2e-first-run.mjs` checks it.
-- Every store keeps the same key names as before (`store-site`, `store-setting`, `store-todo`, `store-notes`, `store-search`, `store-bookmarks`, `store-wallpaper`). Settings saved by the previous version are partly ignored because several options were removed.
+- Storage keys: `store-site`, `store-setting`, `store-search`, `store-bookmarks`, `store-wallpaper`.
 - `unlimitedStorage` is requested because wallpaper files live in IndexedDB.
 - Icons are plain placeholders. Replace `icons/*.png` before distributing.

@@ -27,14 +27,6 @@ export function faviconUrl(target, size = 64) {
   return `${chrome.runtime.getURL('_favicon/')}?pageUrl=${encodeURIComponent(target)}&size=${size}`;
 }
 
-export function debounce(fn, ms) {
-  let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), ms);
-  };
-}
-
 export function readFileAsDataUrl(file, maxBytes) {
   return new Promise((resolve, reject) => {
     if (!file) return reject(new Error('No file'));
@@ -69,11 +61,6 @@ export function toast(message) {
   el.classList.add('show');
   clearTimeout(toast._t);
   toast._t = setTimeout(() => el.classList.remove('show'), 2200);
-}
-
-export function formatTime(ts) {
-  const d = new Date(ts);
-  return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
 export function dayStart(ts = Date.now()) {

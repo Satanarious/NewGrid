@@ -36,7 +36,7 @@ html, body {
   background: #2d3142;
 }
 
-button, h1, h2, h3, h4, .plugin-title, .editor-title, .confirm-title, .drawer-head h2, .type-tabs, .engine-btn, .search-submit, .fbtn, .icon-text, .seg button, .wp-label, .btn-file {
+button, h1, h2, h3, h4, .editor-title, .confirm-title, .drawer-head h2, .type-tabs, .engine-btn, .search-submit, .fbtn, .icon-text, .seg button, .wp-label, .btn-file {
   font-family: var(--font-head);
 }
 input, select, textarea { font-family: var(--font-body); font-size: 13px; color: inherit; }
@@ -392,20 +392,25 @@ body.show-pager .pager { display: block; }
   flex-direction: column;
   overflow: hidden;
 }
-.plugin-box { width: min(980px, 94vw); }
 .plugin-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.12); }
-.plugin-title, .editor-title { margin: 0; font-size: 18px; font-weight: 600; }
+.editor-title { margin: 0; font-size: 18px; font-weight: 600; }
 .plugin-head .folder-name { font-family: var(--font-head); font-size: 18px; font-weight: 600; background: transparent; border: 0; padding: 0; flex: 1; }
-.plugin-body { padding: 16px 18px; overflow: auto; }
 
-.folder-box-modal { width: min(560px, 92vw); }
+/* The folder grid is up to 6 columns of 120px tiles and 4 rows tall. The dialog keeps its
+   minimum width for a few icons and grows with the columns; extra rows scroll inside .folder-items. */
+.folder-box-modal {
+  width: min(max(560px, calc(var(--folder-cols, 1) * 120px + (var(--folder-cols, 1) - 1) * 16px + 44px)), 92vw);
+  max-height: calc(100vh - 48px);
+}
 .folder-items {
   padding: 22px;
   display: grid;
+  grid-template-columns: repeat(var(--folder-cols, 1), 120px);
   gap: 16px;
   justify-content: center;
-  overflow: auto;
-  max-height: 58vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 572px;
 }
 .folder-items .icon { position: relative; width: 120px; height: 120px; }
 .folder-items .icon-content { width: 96px; }
@@ -536,11 +541,11 @@ body.show-pager .pager { display: block; }
 .editor-box form label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
 .editor-box form .row { margin-top: 6px; }
 .editor-box button.primary { background: #4a90e2; color: #fff; font-weight: 600; }
-.editor-box form button, .confirm-box button, .card button, .plugin-body button { padding: 7px 14px; border-radius: 8px; background: rgba(255, 255, 255, 0.16); }
+.editor-box form button, .confirm-box button, .card button { padding: 7px 14px; border-radius: 8px; background: rgba(255, 255, 255, 0.16); }
 .editor-box form button.danger { background: rgba(255, 110, 110, 0.18); }
 
 button:hover { filter: brightness(1.15); }
-.plugin-body button.link, .card button.link { padding: 0; background: none; }
+.card button.link { padding: 0; background: none; }
 
 /* ---- settings drawer ---- */
 .drawer {
@@ -587,21 +592,6 @@ button:hover { filter: brightness(1.15); }
 .engine-list li { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
 .perm { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 6px 0; font-size: 13px; }
 .perm small { display: block; opacity: 0.65; }
-
-/* ---- plugin pages ---- */
-.split { display: grid; grid-template-columns: 220px 1fr; gap: 14px; min-height: 360px; }
-.list { display: flex; flex-direction: column; gap: 6px; overflow: auto; }
-.list-item { padding: 8px; border-radius: 10px; cursor: pointer; background: rgba(255, 255, 255, 0.08); }
-.list-item.active { background: rgba(138, 180, 255, 0.28); }
-.list-item small { display: block; opacity: 0.6; }
-.editor-pane { display: flex; flex-direction: column; gap: 8px; }
-.editor-pane input { font-size: 16px; font-weight: 600; }
-.editor-pane textarea { flex: 1; min-height: 300px; resize: vertical; }
-.todo-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
-.todo-list li { display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: rgba(255, 255, 255, 0.08); border-radius: 10px; }
-.todo-list li.done .todo-text { text-decoration: line-through; opacity: 0.55; }
-.todo-text { flex: 1; }
-.todo-remind { font-size: 12px; }
 
 /* ---- confirm and toast ---- */
 .confirm-box { width: min(400px, 90vw); padding: 20px 22px; }

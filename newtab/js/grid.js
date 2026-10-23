@@ -303,10 +303,9 @@ function renderFolderModal() {
     return;
   }
   const overlay = $('#overlay-folder');
-  const cols = Math.min(4, Math.max(1, Math.ceil(Math.sqrt(folder.children.length || 1))));
+  overlay.style.setProperty('--folder-cols', Math.min(6, Math.max(1, folder.children.length)));
   overlay.querySelector('.folder-name').value = folder.name;
   const items = overlay.querySelector('.folder-items');
-  items.style.gridTemplateColumns = `repeat(${cols}, 120px)`;
   items.innerHTML = folder.children.length
     ? folder.children.map((child, i) => `
         <div class="icon" draggable="true" data-id="${esc(child.id)}" data-kind="site" data-page="-1" data-index="${i}">

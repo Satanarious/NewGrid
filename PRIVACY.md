@@ -2,7 +2,7 @@
 
 Last updated: October 22, 2026
 
-NewGrid is a Chrome and Edge extension that replaces the new tab page with a grid of your favourite websites, plus search, wallpapers, to-do reminders, and local backup.
+NewGrid is a Chrome and Edge extension that replaces the new tab page with a grid of your favourite websites, plus search, wallpapers, and local backup.
 
 NewGrid has no accounts, no analytics, and no advertising. The developer does not collect, receive, or sell any of your personal data.
 
@@ -10,7 +10,7 @@ NewGrid has no accounts, no analytics, and no advertising. The developer does no
 
 Everything you create in NewGrid is stored locally in your browser:
 
-- Your sites, folders, icon settings, layout, search engines, notes, and to-dos are stored in `chrome.storage.local`.
+- Your sites, folders, icon settings, layout, search engines are stored in `chrome.storage.local`.
 - Wallpaper files you upload (images, GIFs, and videos) are stored in your browser's IndexedDB.
 - Backups are only created when you export them. The backup is a file saved to your computer, and it is never uploaded.
 
@@ -32,16 +32,10 @@ NewGrid makes a small number of network requests to show icons and wallpapers:
 
 NewGrid requests the `activeTab` permission. It reads the URL and title of the current tab only when you click the "Add this page" button in the toolbar popup. It does not monitor your browsing.
 
-## Reminders
-
-To-do reminders use Chrome's `alarms` and `notifications` features. These run locally, and nothing is sent anywhere.
-
 ## Permissions
 
 - `storage`: saves your settings and content on this device.
 - `unlimitedStorage`: allows large wallpaper files to be stored in IndexedDB.
-- `alarms`: schedules to-do reminders.
-- `notifications`: shows to-do reminders.
 - `activeTab`: reads the current tab when you use "Add this page".
 
 ## What NewGrid does not do

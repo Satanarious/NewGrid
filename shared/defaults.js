@@ -1,8 +1,6 @@
 export const STORE_KEYS = {
   site: 'store-site',
   setting: 'store-setting',
-  todo: 'store-todo',
-  notes: 'store-notes',
   search: 'store-search',
   wallpaper: 'store-wallpaper',
 };
@@ -77,8 +75,6 @@ export const DEFAULT_SEARCH = {
 };
 
 export const LOCAL_PAGES = [
-  { name: 'Notes', target: 'newgrid://notes', bgText: 'N', bgColor: '#f5a623' },
-  { name: 'To-dos', target: 'newgrid://todos', bgText: 'T', bgColor: '#4a90e2' },
   { name: 'Wallpaper', target: 'newgrid://wallpaper', bgText: 'W', bgColor: '#50e3c2' },
   { name: 'Settings', target: 'newgrid://settings', bgText: 'S', bgColor: '#4a4a4a' },
   { name: 'Google', target: 'https://www.google.com/', bgText: 'G', bgColor: '#ffffff' },

@@ -1,15 +1,15 @@
 {
   "name": "newgrid",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Local-only rebuild of the NewGrid feature set (no accounts, sync or cloud).",
   "type": "module",
   "scripts": {
     "test": "node --test tests/sites.test.mjs",
     "icons": "node scripts/make-icons.mjs",
-    "check": "node --check background.js && node --check shared/sites.js && node --check shared/settings.js && node --check shared/search.js && node --check shared/icons.js && node --check newtab/js/app.js && node --check newtab/js/grid.js && node --check newtab/js/drawer.js && node --check newtab/js/icon-editor.js && node --check newtab/js/wallpaper.js && node --check newtab/js/panels.js && node --check newtab/js/launcher.js && node --check newtab/js/context.js && node --check newtab/js/confirm.js && node --check popup/popup.js"
+    "check": "node --check background.js && node --check shared/sites.js && node --check shared/settings.js && node --check shared/search.js && node --check shared/icons.js && node --check newtab/js/app.js && node --check newtab/js/grid.js && node --check newtab/js/drawer.js && node --check newtab/js/icon-editor.js && node --check newtab/js/wallpaper.js && node --check newtab/js/launcher.js && node --check newtab/js/context.js && node --check newtab/js/confirm.js && node --check popup/popup.js"
   },
-  "license": "UNLICENSED",
+  "license": "MIT",
   "devDependencies": {
     "eslint": "^9.39.5",
     "globals": "^15.15.0",

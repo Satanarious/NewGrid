@@ -331,7 +331,7 @@ async function importBackup(file) {
   if (mode === 'overwrite') {
     const ok = await confirmDialog({
       title: 'Replace everything?',
-      message: 'Your current icons, folders, notes, to-dos, settings and wallpapers will be replaced by the backup.',
+      message: 'Your current icons, folders, settings and wallpapers will be replaced by the backup.',
       okText: 'Replace',
       danger: true,
     });
@@ -367,18 +367,6 @@ async function mergeBackup(incoming) {
       page = addSite(pages, structuredClone(topItem), cap, page);
     }
     await write(STORE_KEYS.site, { sites: pages, redirectVersion: '', updatedIconVersion: '11.0.41' });
-  }
-  if (incoming[STORE_KEYS.notes]) {
-    const notes = await read(STORE_KEYS.notes, { list: [], checkedId: null });
-    const ids = new Set(notes.list.map((n) => n.id));
-    notes.list.push(...incoming[STORE_KEYS.notes].list.filter((n) => !ids.has(n.id)));
-    await write(STORE_KEYS.notes, notes);
-  }
-  if (incoming[STORE_KEYS.todo]) {
-    const todo = await read(STORE_KEYS.todo, { todoList: [], listLength: 0 });
-    const ids = new Set(todo.todoList.map((t) => t.id));
-    todo.todoList.push(...incoming[STORE_KEYS.todo].todoList.filter((t) => !ids.has(t.id)));
-    await write(STORE_KEYS.todo, todo);
   }
   if (incoming[STORE_KEYS.search]) {
     const search = await read(STORE_KEYS.search, DEFAULT_SEARCH);
