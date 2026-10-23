@@ -15,6 +15,15 @@ A local-only Chrome/Edge new tab extension which allows for a grid-based layout 
 2. Click **Load unpacked** and select this folder.
 3. Open a new tab.
 
+<center>
+<table>
+<tr>
+<td><a href="https://chromewebstore.google.com/detail/newgrid/blmoejlifahndadkjaiogklgbgfifoca">
+<img src="icons\chrome_web_store.png" width=220></img>
+</a></tr>
+<table>
+</center>
+
 # Screenshots
 
 <table>
