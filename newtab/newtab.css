@@ -267,6 +267,7 @@ main#main {
 .icon-content {
   container-type: size;
   position: relative;
+  overflow: hidden;
   width: var(--t);
   aspect-ratio: 1 / 1;
   border-radius: calc(var(--icon-radius) * 100%);
@@ -410,9 +411,9 @@ body.show-pager .pager { display: block; }
   justify-content: center;
   overflow-x: hidden;
   overflow-y: auto;
-  max-height: 572px;
+  max-height: min(572px, 55vh);
 }
-.folder-items .icon { position: relative; width: 120px; height: 120px; }
+.folder-items .icon { position: relative; width: 120px; height: auto; }
 .folder-items .icon-content { width: 96px; }
 .folder-actions {
   display: flex;
@@ -446,13 +447,16 @@ body.show-pager .pager { display: block; }
 }
 
 /* ---- icon editor ---- */
-.editor-box { width: min(840px, 95vw); }
+.editor-box { width: min(840px, 100%); }
 .editor-body { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 24px; padding: 18px; overflow: auto; }
 .ed-left { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .ed-stage {
   position: relative;
+  align-self: center;
   width: 340px;
   height: 340px;
+  /* Narrow windows scale the stage down with zoom; the editor keeps its 340px coordinate system. */
+  zoom: 1;
   border-radius: 18px;
   overflow: hidden;
   cursor: grab;
@@ -493,7 +497,7 @@ body.show-pager .pager { display: block; }
   pointer-events: none;
 }
 .ed-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; margin: 0; opacity: 0.6; text-align: center; padding: 0 30px; }
-.ed-toolbar { display: flex; align-items: center; gap: 8px; }
+.ed-toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .ed-toolbar .ed-zoom-label { font-family: var(--font-head); font-variant-numeric: tabular-nums; min-width: 4.5em; text-align: center; opacity: 0.85; }
 .ed-toolbar button { padding: 6px 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.14); font-size: 13px; }
 .ed-toolbar .spacer { flex: 1; }
@@ -513,7 +517,6 @@ body.show-pager .pager { display: block; }
 .ed-prev-frame.transparent { background-image: conic-gradient(#5a5f70 25%, #3b3f4e 0 50%, #5a5f70 0 75%, #3b3f4e 0); background-size: 12px 12px; }
 .ed-prev-frame img { position: absolute; max-width: none; display: block; }
 .ed-prev-frame img.empty { visibility: hidden; }
-.icon-content.pic-tile { overflow: hidden; }
 .icon-content .pic {
   position: absolute;
   max-width: none;
@@ -571,8 +574,8 @@ button:hover { filter: brightness(1.15); }
 .field > span:not(.lbl):not(.ctl) { white-space: nowrap; }
 .field .ctl { display: flex; align-items: center; gap: 8px; flex-shrink: 0; white-space: nowrap; }
 .field output { opacity: 0.7; min-width: 3.2em; text-align: right; font-variant-numeric: tabular-nums; }
-.field input[type="range"] { width: 130px; }
-.field select { max-width: 170px; }
+.field input[type="range"] { width: clamp(90px, 30vw, 130px); }
+.field select { max-width: min(170px, 46vw); }
 .field input[type="file"] { width: 100%; }
 .drawer .stack { gap: 10px; }
 .wp-group { display: flex; flex-direction: column; gap: 8px; padding: 8px 0 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
@@ -615,3 +618,31 @@ button:hover { filter: brightness(1.15); }
   z-index: 100;
 }
 #toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---- responsive: adapt to small windows ---------------------------------- */
+@media (max-width: 760px) {
+  /* Icon editor stacks: the preview above, the controls below. */
+  .editor-body { grid-template-columns: 1fr; gap: 18px; padding: 14px; }
+}
+
+@media (max-width: 720px) {
+  main#main { padding: 64px 28px 44px; }
+}
+
+@media (max-width: 480px) {
+  .overlay { padding: 12px; }
+  main#main { padding: 56px 18px 40px; }
+  .search-wrap { width: min(640px, 92vw); }
+  .engine-btn { padding-inline: 10px; }
+  .search-submit { padding-inline: 12px; }
+  .pager { width: 30px; height: 44px; font-size: 24px; }
+
+  /* Folder dialog: smaller tiles so the columns fit narrow windows. */
+  .folder-box-modal { width: 94vw; }
+  .folder-items { grid-template-columns: repeat(auto-fit, 88px); gap: 12px; padding: 16px; }
+  .folder-items .icon { width: 88px; height: 88px; }
+  .folder-items .icon-content { width: 68px; }
+
+  .ed-preview { gap: 10px; }
+  .editor-body { gap: 14px; }
+}

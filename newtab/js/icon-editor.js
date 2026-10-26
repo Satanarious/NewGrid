@@ -229,10 +229,12 @@ async function loadSiteIcon() {
   el.full.classList.remove('hide');
   if (el.tileImg.getAttribute('src') !== url) el.tileImg.src = url;
   if (el.full.getAttribute('src') !== url) el.full.src = url;
+  updatePreview();
   const processed = plausible ? await processedIcon(domain) : null;
   if (processed && ed.mode === 'site' && el.tileImg.isConnected && siteDomain(normalizeUrl(el.targetIn.value) || '') === domain) {
     el.tileImg.src = processed;
     el.full.src = processed;
+    updatePreview();
   }
 }
 
@@ -457,7 +459,18 @@ function bindOnce() {
   bindStage();
   bindKeys();
   bindControls();
+  // The stage keeps a fixed 340px coordinate system; zoom it to fit narrow windows.
+  window.addEventListener('resize', fitStageZoom);
   ed.bound = true;
+}
+
+// Scale the stage down when its column is narrower than 340px. CSS zoom shrinks the whole
+// stage with its children, and the pointer code already normalises by the rendered size.
+function fitStageZoom() {
+  if (!el.stage || el.overlay.classList.contains('hide')) return;
+  const avail = el.stage.parentElement ? el.stage.parentElement.clientWidth : STAGE;
+  const z = Math.min(1, avail / STAGE);
+  el.stage.style.zoom = z < 0.999 ? z : '';
 }
 
 // ---- open, save, close ----------------------------------------------------
@@ -509,6 +522,7 @@ export async function openIconEditor(item, { onSave, onDelete } = {}) {
     ed.bg = item?.bgColor && item.bgColor !== 'transparent' ? item.bgColor : 'transparent';
   }
   el.overlay.classList.remove('hide');
+  fitStageZoom();
   el.nameIn.focus();
   render();
 }
