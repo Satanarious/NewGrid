@@ -7,22 +7,36 @@
 
 <h1 align="center">NewGrid</h1>
 
-A local-only Chrome/Edge new tab extension which allows for a grid-based layout of your favourite websites. No accounts, backup locally. Everything lives in `chrome.storage.local` and IndexedDB.
+A local-only Chrome/Edge/Firefox new tab extension which allows for a grid-based layout of your favourite websites. No accounts, backup locally. Everything lives in `chrome.storage.local` and IndexedDB.
 
 ## Install
+
+### Chrome / Edge
 
 1. Open `chrome://extensions` (or `edge://extensions`) and turn on Developer mode.
 2. Click **Load unpacked** and select this folder.
 3. Open a new tab.
 
-<center>
+### Firefox
+
+1. Install from [addons.mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/newgrid/), or load it temporarily:
+2. Open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…** and pick `release/NewGrid-x.y.z-firefox.xpi`.
+3. Open a new tab.
+
+Temporary add-ons are removed when Firefox closes, and a new-tab override loaded this way resets between sessions — for daily use, install the signed version from AMO.
+
+<p align="center">
 <table>
 <tr>
 <td><a href="https://chromewebstore.google.com/detail/newgrid/blmoejlifahndadkjaiogklgbgfifoca">
 <img src="icons\chrome_web_store.png" width=220></img>
-</a></tr>
+</a>
+<td><a href="https://addons.mozilla.org/en-US/firefox/addon/newgrid/">
+<img src="icons\firefox_add_on.svg" width=180></img>
+</a>
+</tr>
 <table>
-</center>
+</p>
 
 # Screenshots
 
@@ -45,6 +59,22 @@ A local-only Chrome/Edge new tab extension which allows for a grid-based layout 
   </tr>
 </table>
 
+## Firefox support
+
+Firefox is supported through a build of the same source. `node scripts/make-firefox.mjs` reads the Chrome `manifest.json` and writes a Gecko-adapted manifest into the package, producing `release/NewGrid-x.y.z-firefox.zip` and an identical `.xpi` (the zip is the one you upload to [AMO](https://addons.mozilla.org/developers/); validate it first with `npx web-ext lint --source-dir <extracted zip>`).
+
+Differences from the Chrome build:
+
+| Chrome (MV3) | Firefox (Gecko) |
+| --- | --- |
+| `background.service_worker` | `background.scripts` event page |
+| `minimum_chrome_version: "105"` | removed |
+| `unlimitedStorage` permission | removed (Firefox has no storage quota to lift) |
+| extension ID from the CRX signing key | fixed Gecko ID `{e5ad6c4e-e78e-4644-80c1-726eadd24e04}` |
+| — | `data_collection_permissions: required: ["none"]` (AMO requirement; see [PRIVACY.md](PRIVACY.md)) |
+
+The Firefox build requires Firefox 142 or later — the first release where `data_collection_permissions` is supported on both desktop and Android. The add-on ID must never change between releases, or Firefox will treat updates as a different extension.
+
 ## Features
 
 | Area | What works |
@@ -64,7 +94,7 @@ A local-only Chrome/Edge new tab extension which allows for a grid-based layout 
 
 ## Project layout
 
-```
+```text
 manifest.json            MV3 manifest (newtab override, popup, service worker)
 background.js            service worker: imports the first-run defaults on install
 shared/                  pure logic used by the pages and tests
@@ -89,8 +119,10 @@ newtab/
 popup/popup.html, popup.js   add current page
 tests/sites.test.mjs     unit tests for the model and settings (node --test)
 tests/e2e-smoke.mjs      browser test that loads the extension and clicks through it
+tests/e2e-features.mjs   browser test for wallpaper, icon editor and page turns
 tests/screenshots.mjs    takes screenshots of the main states into ./screenshots
 scripts/make-icons.mjs   generates placeholder PNG icons
+scripts/make-firefox.mjs builds the Firefox package (zip + xpi) into release/
 ```
 
 ## Develop and test
@@ -103,6 +135,7 @@ npx eslint .           # lint
 node tests/e2e-smoke.mjs   # loads the unpacked extension in a real browser
 node tests/e2e-features.mjs  # wallpaper library, custom icons, icon editor, page turns
 node tests/screenshots.mjs # writes screenshots to ./screenshots
+node scripts/make-firefox.mjs  # builds release/NewGrid-<version>-firefox.zip and .xpi
 ```
 
 The browser tests use `puppeteer-core`. Chrome 137+ branded builds removed `--load-extension`, so the tests default to Microsoft Edge. Set `CHROME_PATH` to another Chromium build that still supports it, such as Chrome for Testing.
@@ -114,5 +147,6 @@ MIT. See [LICENSE](LICENSE).
 ## Notes
 - `default.json` (a backup file) is imported silently the first time the extension is installed. It runs once, and only on a fresh install. Replace the file to change what new users start with. `tests/e2e-first-run.mjs` checks it.
 - Storage keys: `store-site`, `store-setting`, `store-search`, `store-bookmarks`, `store-wallpaper`.
-- `unlimitedStorage` is requested because wallpaper files live in IndexedDB.
+- `unlimitedStorage` is requested because wallpaper files live in IndexedDB (Chrome only; Firefox has no quota to lift).
 - Icons are plain placeholders. Replace `icons/*.png` before distributing.
+- Cross-browser notes: `popup.js` opens the right new-tab page per browser (`chrome://newtab` vs `about:newtab`), and `launcher.js` guards `chrome.management` (Chromium-only) with a toast fallback on Firefox.
