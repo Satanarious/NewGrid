@@ -2,7 +2,7 @@ import { STORE_KEYS, DEFAULT_SEARCH } from '../../shared/defaults.js';
 import { read, write } from '../../shared/storage.js';
 import { state, saveSetting, saveSearch, saveWallpaper, savePages } from './context.js';
 import { applyChange, getPath, mergeSetting, effectiveLayout } from '../../shared/settings.js';
-import { esc, $, toast, downloadText } from '../../shared/util.js';
+import { esc, html, $, toast, downloadText } from '../../shared/util.js';
 import { isValidTemplate } from '../../shared/search.js';
 import { addSite } from '../../shared/sites.js';
 import { confirmDialog, alertDialog } from './confirm.js';
@@ -144,7 +144,7 @@ function renderDrawer() {
       <h3>${esc(s.title)}</h3>
       ${s.items.map(controlHtml).join('')}
     </section>`).join('');
-  body.innerHTML = `${sections}${wallpaperCard()}${engineCard()}${backupCard()}`;
+  body.replaceChildren(html(`${sections}${wallpaperCard()}${engineCard()}${backupCard()}`));
   bindDrawer(body);
   hydrateLibraryThumbs(body);
   body.scrollTop = keep;
@@ -155,7 +155,7 @@ export function refreshWallpaperCard() {
   if (!drawer.open) return;
   const old = $('#sec-wallpaper', $('#drawer'));
   if (!old) return;
-  old.insertAdjacentHTML('afterend', wallpaperCard());
+  old.after(html(wallpaperCard()));
   old.remove();
   const fresh = $('#sec-wallpaper', $('#drawer'));
   bindWallpaper(fresh);

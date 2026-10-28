@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "NewGrid",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "Local-only new tab page with icon folders, search, wallpapers and backup. No accounts, just you and your privacy.",
   "minimum_chrome_version": "105",
   "chrome_url_overrides": {

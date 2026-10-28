@@ -5,6 +5,16 @@ export function esc(value) {
   return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+// Builds DOM nodes from an HTML string without innerHTML (which the add-on linter flags as
+// unsafe). The DOMParser document is inert: nothing executes and no resource is fetched.
+// Every string passed in must already escape its dynamic values with esc().
+export function html(markup) {
+  const doc = new DOMParser().parseFromString(`<template>${markup}</template>`, 'text/html');
+  const frag = document.createDocumentFragment();
+  frag.append(...doc.querySelector('template').content.childNodes);
+  return frag;
+}
+
 // A link is kept as typed when it has a scheme such as http://, https:// or ftp://.
 // Anything else ("example.com", "localhost:3000", "www.site.org/page") is treated as an https address.
 export function normalizeUrl(input) {

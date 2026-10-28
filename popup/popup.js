@@ -33,7 +33,9 @@ document.getElementById('add-form').addEventListener('submit', async (e) => {
 });
 
 document.getElementById('open-newtab').addEventListener('click', () => {
-  chrome.tabs.create({ url: 'chrome://newtab' });
+  // The new tab page is overridden by this extension in both browsers.
+  const url = /Firefox\//i.test(navigator.userAgent) ? 'about:newtab' : 'chrome://newtab';
+  chrome.tabs.create({ url });
 });
 
 function setStatus(message, isError = false) {

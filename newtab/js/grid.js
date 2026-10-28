@@ -1,5 +1,5 @@
 import { state, savePages } from './context.js';
-import { $, esc, isNewGridTarget, toast } from '../../shared/util.js';
+import { $, esc, html, isNewGridTarget, toast } from '../../shared/util.js';
 import {
   findPos, getItem, moveBefore, moveIntoFolder, mergeIntoFolder, destroyFolder,
   deleteFolder, renameFolder, addSite, defaultSite, removeById, findIconById,
@@ -100,7 +100,7 @@ export function renderGrid() {
   if (!track) return;
   const layout = effectiveLayout(state.setting);
   const cap = layout.capacity;
-  track.innerHTML = state.pages.map((page, p) => {
+  track.replaceChildren(html(state.pages.map((page, p) => {
     const cells = [];
     for (let i = 0; i < cap; i++) {
       const style = cellStyle(i, layout);
@@ -108,7 +108,7 @@ export function renderGrid() {
       else cells.push(`<div class="cell empty" data-drop-page="${p}" style="${style}"></div>`);
     }
     return `<div class="page" data-page="${p}"><div class="items-card"><div class="items-grid">${cells.join('')}</div></div></div>`;
-  }).join('');
+  }).join('')));
   track.style.setProperty('--icon-col', layout.col);
   track.style.setProperty('--icon-row', layout.row);
   updatePages();
@@ -120,9 +120,9 @@ export function renderGrid() {
 function renderDots() {
   const dots = $('#site-dots');
   if (!dots) return;
-  dots.innerHTML = state.pages.length > 1
+  dots.replaceChildren(html(state.pages.length > 1
     ? state.pages.map((_, p) => `<button class="dot${p === state.currentPage ? ' active' : ''}" data-goto="${p}" aria-label="Page ${p + 1}"></button>`).join('')
-    : '';
+    : ''));
 }
 
 // ---- page turn animations -------------------------------------------------
@@ -306,13 +306,13 @@ function renderFolderModal() {
   overlay.style.setProperty('--folder-cols', Math.min(6, Math.max(1, folder.children.length)));
   overlay.querySelector('.folder-name').value = folder.name;
   const items = overlay.querySelector('.folder-items');
-  items.innerHTML = folder.children.length
+  items.replaceChildren(html(folder.children.length
     ? folder.children.map((child, i) => `
         <div class="icon" draggable="true" data-id="${esc(child.id)}" data-kind="site" data-page="-1" data-index="${i}">
           ${iconVisual(child)}
           <div class="icon-name">${esc(child.name)}</div>
         </div>`).join('')
-    : '<p class="empty">This folder is empty.</p>';
+    : '<p class="empty">This folder is empty.</p>'));
   upgradeIcons(items);
 }
 

@@ -2,7 +2,7 @@ import { state, hooks, loadAll, listenForChanges, saveSearch } from './context.j
 import { renderGrid, bindGrid, goToPage, turnPage, openEditor, closeFolder } from './grid.js';
 import { closeIconEditor } from './icon-editor.js';
 import { bindDrawerShell, closeDrawer, isDrawerOpen, refreshWallpaperCard } from './drawer.js';
-import { $, esc } from '../../shared/util.js';
+import { $, esc, html } from '../../shared/util.js';
 import { allEngines, findEngine, availableTypes, engineTemplate, buildSearchUrl, SEARCH_TYPE_LABELS } from '../../shared/search.js';
 import { effectiveLayout } from '../../shared/settings.js';
 import { initWallpaper, renderWallpaper, autoSwitchIfDue } from './wallpaper.js';
@@ -58,9 +58,9 @@ function renderSearch() {
   const types = availableTypes(engine);
   if (!types.includes(searchType)) searchType = 'html';
   $('#engine-btn').textContent = `${engine.name} ▾`;
-  $('#type-tabs').innerHTML = types
+  $('#type-tabs').replaceChildren(html(types
     .map((t) => `<button type="button" data-type="${t}" class="${t === searchType ? 'active' : ''}">${SEARCH_TYPE_LABELS[t]}</button>`)
-    .join('');
+    .join('')));
   alignTabs();
   const input = $('#search-input');
   if (s.keepSearchInput && document.activeElement !== input) input.value = localStorage.getItem(DRAFT_KEY) || '';
@@ -78,9 +78,9 @@ function alignTabs() {
 
 function renderEngineMenu() {
   const current = state.search.searchEngine.current;
-  $('#engine-menu').innerHTML = allEngines(state.search)
+  $('#engine-menu').replaceChildren(html(allEngines(state.search)
     .map((e) => `<button type="button" data-engine="${esc(e.uuid)}" class="${e.uuid === current ? 'active' : ''}">${esc(e.name)}</button>`)
-    .join('');
+    .join('')));
 }
 
 function renderAll() {
@@ -194,5 +194,5 @@ async function boot() {
 
 boot().catch((err) => {
   console.error(err);
-  document.body.insertAdjacentHTML('beforeend', `<p style="position:fixed;bottom:8px;left:8px">Failed to load: ${esc(err.message)}</p>`);
+  document.body.append(html(`<p style="position:fixed;bottom:8px;left:8px">Failed to load: ${esc(err.message)}</p>`));
 });

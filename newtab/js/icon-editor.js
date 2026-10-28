@@ -1,4 +1,4 @@
-import { $, toast, normalizeUrl, isNewGridTarget } from '../../shared/util.js';
+import { $, toast, html, normalizeUrl, isNewGridTarget } from '../../shared/util.js';
 import { siteIconUrl, siteDomain } from '../../shared/icons.js';
 import { processedIcon } from './icon-cache.js';
 
@@ -490,10 +490,10 @@ export async function openIconEditor(item, { onSave, onDelete } = {}) {
   el.textColor.value = '#ffffff';
   el.title.textContent = item ? 'Edit icon' : 'Add site';
   el.delete.classList.toggle('hide', !item);
-  el.palette.innerHTML = PALETTE.map((c) => (c === 'transparent'
+  el.palette.replaceChildren(html(PALETTE.map((c) => (c === 'transparent'
     ? '<button type="button" class="swatch none" data-bg="transparent" title="Transparent"></button>'
     : `<button type="button" class="swatch" style="background:${c}" data-bg="${c}" title="${c}"></button>`)).join('')
-    + '<input type="color" id="ed-custom-bg" value="#4a90e2" title="Custom colour">';
+    + '<input type="color" id="ed-custom-bg" value="#4a90e2" title="Custom colour">'));
 
   const saved = item?.iconEdit;
   if (saved) {

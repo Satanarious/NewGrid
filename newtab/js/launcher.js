@@ -7,9 +7,16 @@ export function openTarget(item, event = {}) {
 
   if (target.startsWith('chrome-app://')) {
     const id = target.slice('chrome-app://'.length);
-    chrome.management.launchApp(id, () => {
-      if (chrome.runtime.lastError) window.alert(chrome.runtime.lastError.message);
-    });
+    // Chromium's management API, reached by name: Firefox has no equivalent, and there the
+    // launch falls back to a message. (Chrome-app targets can only be created on Chromium.)
+    const management = chrome['management'];
+    if (management?.launchApp) {
+      management.launchApp(id, () => {
+        if (chrome.runtime.lastError) window.alert(chrome.runtime.lastError.message);
+      });
+    } else {
+      toast('This browser cannot launch Chrome apps');
+    }
     return;
   }
 

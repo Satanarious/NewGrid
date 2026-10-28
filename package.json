@@ -1,6 +1,6 @@
 {
   "name": "newgrid",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "private": true,
   "description": "Local-only rebuild of the NewGrid feature set (no accounts, sync or cloud).",
   "type": "module",
