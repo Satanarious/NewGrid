@@ -1,6 +1,7 @@
 import { $, toast, html, normalizeUrl, isNewGridTarget } from '../../shared/util.js';
 import { siteIconUrl, siteDomain } from '../../shared/icons.js';
 import { processedIcon } from './icon-cache.js';
+import { state } from './context.js';
 
 const STAGE = 340; // square stage in px
 const TILE = 240; // the icon window, centred in the stage
@@ -14,7 +15,7 @@ const DEFAULT_ICON_SCALE = 0.7;
 const PALETTE = ['transparent', '#ffffff', '#f5a623', '#e74c3c', '#7ed321', '#4a90e2', '#50e3c2', '#bd10e0', '#9013fe', '#417505', '#4a4a4a', '#000000'];
 
 const ed = {
-  mode: 'site',
+  mode: 'image',
   src: null,
   img: null,
   linked: false,
@@ -169,6 +170,10 @@ function movable() {
 }
 
 function render() {
+  // Website icons fetch from third-party services, so the tab is offered only when allowed.
+  // Mode "site" stays valid without it (it saves a no-fetch icon that shows its letter).
+  const thirdParty = !!state.setting?.icon?.thirdPartyIcons;
+  el.overlay.querySelector('[data-mode="site"]')?.classList.toggle('hide', !thirdParty);
   const off = (STAGE - TILE) / 2;
   Object.assign(el.tile.style, { left: `${off}px`, top: `${off}px`, width: `${TILE}px`, height: `${TILE}px` });
   el.tile.classList.toggle('transparent', ed.bg === 'transparent');
@@ -216,6 +221,12 @@ function render() {
 
 // Website icon: the processed icon when access is granted, otherwise the plain one.
 async function loadSiteIcon() {
+  // No third-party permission: no request at all, not even the plain favicon.
+  if (!state.setting?.icon?.thirdPartyIcons) {
+    el.tileImg.classList.add('hide');
+    el.full.classList.add('hide');
+    return;
+  }
   // The field may hold "github.com" without a scheme, so read it the same way the saved link is read.
   const domain = siteDomain(normalizeUrl(el.targetIn.value) || '');
   const plausible = /\.[a-z]{2,}$/i.test(domain);
@@ -518,7 +529,8 @@ export async function openIconEditor(item, { onSave, onDelete } = {}) {
     ed.bg = item.bgColor || 'transparent';
     el.text.value = ed.text;
   } else {
-    ed.mode = 'site';
+    // Image is the default tab; picking a target and saving still works without one.
+    ed.mode = 'image';
     ed.bg = item?.bgColor && item.bgColor !== 'transparent' ? item.bgColor : 'transparent';
   }
   el.overlay.classList.remove('hide');
@@ -541,6 +553,9 @@ async function save() {
   if (!target) return toast('Enter a valid URL');
   const base = { name, target, type: isNewGridTarget(target) ? 'app' : 'web', updatetime: Date.now() };
   let patch;
+  // Image tab before any picture was chosen: fall back to a website icon so that
+  // adding a site by name and URL alone still saves.
+  if (ed.mode === 'image' && !ed.src && target) ed.mode = 'site';
   if (ed.mode === 'image') {
     if (!ed.src) return toast('Choose an image first');
     // A copied picture is saved as the finished icon. A linked picture is saved as its link, with the zoom and

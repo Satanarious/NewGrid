@@ -165,8 +165,13 @@ function bindChrome() {
 function startAnimation() {
   if (!state.setting.icon.startAnimation) return;
   const box = $('#site-box');
+  const items = $('#site-items');
   box.classList.add('start-animate');
+  // Icons cascade in with a small stagger on top of the box zoom.
+  items.classList.add('icon-stagger');
+  items.querySelectorAll('.icon').forEach((el, i) => el.style.setProperty('--stagger', Math.min(i, 40)));
   box.addEventListener('animationend', () => box.classList.remove('start-animate'), { once: true });
+  setTimeout(() => items.classList.remove('icon-stagger'), 1400);
 }
 
 async function boot() {

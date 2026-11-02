@@ -48,7 +48,10 @@ function cssUrl(dataUrl) {
 }
 
 // One tile: its background follows "Icon background size"; a glyph inside follows "Icon size".
+// Website favicons come from third-party services only when the user has allowed it; otherwise
+// the tile falls back to its letter on a glass background.
 function iconVisual(item) {
+  const thirdParty = !!state.setting?.icon?.thirdPartyIcons;
   const tileClass = clearTile(item) ? 'icon-content clear' : 'icon-content';
   if (item.iconEdit?.mode === 'image' && item.iconEdit.linked) return pictureTile(item, tileClass);
   const style = (extra = '') => `style="${esc(extra)}"`;
@@ -60,12 +63,13 @@ function iconVisual(item) {
   if (item.bgText) {
     return `<div class="${tileClass}" ${style(tileStyle)}><span class="icon-text">${esc(item.bgText)}</span></div>`;
   }
-  if (!isNewGridTarget(item.target) && item.target) {
+  if (thirdParty && !isNewGridTarget(item.target) && item.target) {
     const letter = (item.name || '?').trim().charAt(0).toUpperCase() || '?';
     return `<div class="${tileClass}" ${style(tileStyle)}><img class="favicon" alt="" data-letter="${esc(letter)}" data-domain="${esc(siteDomain(item.target))}" src="${esc(siteIconUrl(item.target))}" style="${esc(siteTransform(item))}"></div>`;
   }
   const letter = (item.name || '?').trim().charAt(0).toUpperCase() || '?';
-  return `<div class="${tileClass}" ${style(tileStyle)}><span class="icon-text">${esc(letter)}</span></div>`;
+  // No remote request allowed: keep the tile glassy behind the letter so it stays readable.
+  return `<div class="icon-content" ${style(tileStyle)}><span class="icon-text">${esc(letter)}</span></div>`;
 }
 
 function renderIcon(item, page, index, style = '') {
@@ -113,7 +117,7 @@ export function renderGrid() {
   track.style.setProperty('--icon-row', layout.row);
   updatePages();
   renderDots();
-  upgradeIcons(track);
+  if (state.setting?.icon?.thirdPartyIcons) upgradeIcons(track);
   if (modal.folderId) renderFolderModal();
 }
 
@@ -202,12 +206,14 @@ function bindDnD(root) {
     dragState.id = el.dataset.id;
     dragState.isFolder = el.dataset.kind === 'folder';
     el.classList.add('dragging');
+    document.body.classList.add('drag-paging'); // arms the invisible edge zones
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', el.dataset.id);
   });
 
   root.addEventListener('dragend', () => {
     dragState.id = null;
+    document.body.classList.remove('drag-paging');
     document.querySelectorAll('.dragging').forEach((el) => el.classList.remove('dragging'));
     clearDropMarks();
   });
@@ -313,7 +319,7 @@ function renderFolderModal() {
           <div class="icon-name">${esc(child.name)}</div>
         </div>`).join('')
     : '<p class="empty">This folder is empty.</p>'));
-  upgradeIcons(items);
+  if (state.setting?.icon?.thirdPartyIcons) upgradeIcons(items);
 }
 
 function folderOf(id) {
@@ -375,6 +381,18 @@ export function bindGrid(openSiteTarget = openTarget) {
     if (item) openSiteTarget(item, e);
   });
 
+  // Middle mouse button opens the site in a new tab. Browsers deliver button 1
+  // as an auxclick (click never fires for it); preventDefault stops autoscroll.
+  // The launcher already treats event.button === 1 as "open in a new tab".
+  track.addEventListener('auxclick', (e) => {
+    if (e.button !== 1) return;
+    const el = e.target.closest('.icon');
+    if (!el || el.dataset.kind === 'folder') return;
+    e.preventDefault();
+    const item = findIconById(state.pages, el.dataset.id);
+    if (item) openSiteTarget(item, e);
+  });
+
   track.addEventListener('contextmenu', (e) => {
     const el = e.target.closest('.icon');
     if (!el || el.dataset.kind === 'folder') return;
@@ -385,6 +403,15 @@ export function bindGrid(openSiteTarget = openTarget) {
   $('#overlay-folder .folder-items').addEventListener('click', (e) => {
     const el = e.target.closest('.icon');
     if (!el) return;
+    const item = findIconById(state.pages, el.dataset.id);
+    if (item) openSiteTarget(item, e);
+  });
+
+  $('#overlay-folder .folder-items').addEventListener('auxclick', (e) => {
+    if (e.button !== 1) return;
+    const el = e.target.closest('.icon');
+    if (!el) return;
+    e.preventDefault();
     const item = findIconById(state.pages, el.dataset.id);
     if (item) openSiteTarget(item, e);
   });
@@ -449,5 +476,20 @@ export function bindGrid(openSiteTarget = openTarget) {
   };
   pagerDropDelay($('#prev'), -1);
   pagerDropDelay($('#next'), 1);
+
+  // While an icon is dragged, hovering the invisible strip beside the grid (the
+  // vertical space of the page turn buttons) turns the page after a short cooldown.
+  const zoneCooldown = { prev: 0, next: 0 };
+  const bindEdgeZone = (el, delta) => {
+    el.addEventListener('dragenter', () => {
+      const key = delta < 0 ? 'prev' : 'next';
+      const now = Date.now();
+      if (now - zoneCooldown[key] < 400) return;
+      zoneCooldown[key] = now;
+      turnPage(delta);
+    });
+  };
+  bindEdgeZone($('#zone-prev'), -1);
+  bindEdgeZone($('#zone-next'), 1);
 }
 

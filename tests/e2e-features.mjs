@@ -201,11 +201,47 @@ try {
     await page.click('#overlay-editor .cancel');
   });
 
+  await step('third-party icon fetching is off by default, and enabling it asks first', async () => {
+    // Saved while denied: the site shows its letter on a glass tile, and no favicon request.
+    await page.click('#btn-add');
+    await page.waitForSelector('#overlay-editor:not(.hide)');
+    await page.type('#editor-form [name="name"]', 'No fetch');
+    await page.type('#editor-form [name="target"]', 'example.net');
+    assert.equal(await page.$eval('#overlay-editor [data-mode="site"]', (el) => el.classList.contains('hide')), true, 'Website tab hidden');
+    await page.click('#editor-form button[type="submit"]');
+    await pause(600);
+    const noFetch = await page.evaluate(() => {
+      const icon = [...document.querySelectorAll('#site-items .icon')].find((i) => i.querySelector('.icon-name')?.textContent === 'No fetch');
+      if (!icon) return null;
+      return { hasFavicon: !!icon.querySelector('img.favicon'), hasTile: !!icon.querySelector('.icon-content') };
+    });
+    assert.ok(noFetch, 'site saved while denied');
+    assert.equal(noFetch.hasFavicon, false, 'no favicon img without permission');
+    assert.ok(noFetch.hasTile, 'letter tile shown instead');
+
+    // The toggle asks, a refusal reverts the checkbox, an acceptance keeps it.
+    await page.click('#btn-settings');
+    await page.waitForFunction(() => document.getElementById('drawer').classList.contains('open'));
+    await page.waitForSelector('#set-icon-thirdPartyIcons', { timeout: 10000 });
+    await pause(450);
+    await page.click('#set-icon-thirdPartyIcons');
+    await page.waitForSelector('#overlay-confirm:not(.hide)');
+    await page.click('#overlay-confirm .confirm-cancel');
+    assert.equal(await page.$eval('#set-icon-thirdPartyIcons', (e) => e.checked), false, 'refusal reverts');
+    await page.click('#set-icon-thirdPartyIcons');
+    await page.waitForSelector('#overlay-confirm:not(.hide)');
+    await page.click('#overlay-confirm .confirm-ok');
+    assert.equal(await page.$eval('#set-icon-thirdPartyIcons', (e) => e.checked), true, 'accepted turns it on');
+    await page.click('#drawer .close');
+    await pause(450);
+  });
+
   await step('website icons can be zoomed and moved, and the grid shows the same transform', async () => {
     await page.click('#btn-add');
     await page.waitForSelector('#overlay-editor:not(.hide)');
     await page.type('#editor-form [name="name"]', 'Site zoom');
     await page.type('#editor-form [name="target"]', 'example.org');
+    await page.click('#overlay-editor [data-mode="site"]');
     await page.hover('#ed-stage');
     await page.mouse.wheel({ deltaY: -100 });
     await page.mouse.wheel({ deltaY: -100 });
@@ -228,7 +264,7 @@ try {
     assert.notEqual(gridTransform, 'none');
   });
 
-  await step('website icons come from icon.horse, processed with a transparent background, without any permission', async () => {
+  await step('website icons come from icon.horse, processed with a transparent background, once access was granted', async () => {
     await page.click('#btn-add');
     await page.waitForSelector('#overlay-editor:not(.hide)');
     await page.type('#editor-form [name="name"]', 'Better icon');

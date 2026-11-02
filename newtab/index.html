@@ -39,8 +39,14 @@
     <div id="site-dots" class="site-dots"></div>
   </main>
 
-  <button id="prev" class="pager" aria-label="Previous page">‹</button>
-  <button id="next" class="pager" aria-label="Next page">›</button>
+  <button id="prev" class="pager" type="button" aria-label="Previous page">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5l-7 7 7 7"/></svg>
+  </button>
+  <button id="next" class="pager" type="button" aria-label="Next page">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 5l7 7-7 7"/></svg>
+  </button>
+  <div id="zone-prev" class="drag-zone left" aria-hidden="true"></div>
+  <div id="zone-next" class="drag-zone right" aria-hidden="true"></div>
 
   <aside id="drawer" class="drawer glass-strong" aria-label="Settings">
     <header class="drawer-head">

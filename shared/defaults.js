@@ -9,7 +9,7 @@ export const DEFAULT_SETTING = {
   link: { icon: false, search: true },
   view: { pagin: false, scaleMain: 1 },
   layout: { custom: false, row: 3, col: 6, colGap: 24, rowGap: 16, easing: 'linear' },
-  icon: { miniMode: false, shadow: false, startAnimation: false, opacity: 0.92, radius: 0.2, scale: 0.7, bgScale: 0.92, isHideIconName: false },
+  icon: { miniMode: false, shadow: false, startAnimation: false, opacity: 0.92, radius: 0.2, scale: 0.7, bgScale: 0.92, isHideIconName: false, thirdPartyIcons: false },
   search: { hide: false, keepSearchInput: false, hideCategory: false, hideButton: true, shadow: true, scale: 1, radius: 0.5, opacity: 1 },
   font: { shadow: true, size: 13, color: 'rgb(221, 221, 221)' },
   wallpaper: { mask: 0, blur: 0 },

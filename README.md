@@ -75,20 +75,22 @@ Differences from the Chrome build:
 
 The Firefox build requires Firefox 142 or later — the first release where `data_collection_permissions` is supported on both desktop and Android. The add-on ID must never change between releases, or Firefox will treat updates as a different extension.
 
+When you submit a new version to [AMO](https://addons.mozilla.org/developers/), reviewers can ask for the source. `node scripts/make-source.mjs` builds `release/NewGrid-x.y.z-firefox-source.zip` — the add-on contents plus the build scripts and an `AMO-REVIEW.md` note explaining how the packages are rebuilt from it (`node_modules/`, `release/` and `.git/` are excluded). Third-party icon requests are opt-in and off by default; see [PRIVACY.md](PRIVACY.md).
+
 ## Features
 
 | Area | What works |
 | --- | --- |
-| Icon grid | Pages of icons, dots and arrows, wheel and keyboard paging, drag to reorder, drag onto an icon to make a folder, drag onto a folder to add to it, right-click to edit |
+| Icon grid | Pages of icons, dots and arrows, wheel and keyboard paging, drag to reorder, drag onto an icon to make a folder, drag onto a folder to add to it, right-click to edit, middle-click to open a site in a new tab |
 | Icon sizing | **Icon size** scales the glyph (favicon or letter). **Icon background size** scales the tile. **Icon rounded corners** goes from square to a full circle |
 | Grid layout | Default 3 × 6. With **Customize layout** on you control rows, columns, column spacing and row spacing (0 to 160 px each) |
 | Folders | Flip-open dialog, rename, open all, release and delete (both confirmed). The dialog shows up to 6 × 4 icons and scrolls beyond that. The tile shows the first nine icons in a centred 3 × 3 grid at 80% size |
-| Sites | Add (URL, name, favicon, or colour and two-letter text, or a custom image up to 2 MB), edit, delete |
+| Sites | Add (URL, name, favicon, or colour and two-letter text, or a custom image up to 15 MB), edit, delete |
 | Settings | A right-side panel that slides in from the cog. Each group is its own card: Links, View, Layout, Icons, Search box, Font, Wallpaper, Custom search engines, Permissions, Backup |
 | Search | Built-in engines (Google, Bing, DuckDuckGo, Yahoo, Baidu, Yandex, Sogou, 360) in the engine menu. Result types (Web, Images, News, Videos, Maps) appear above the search box. Custom engines with `%s` are added in Settings. Box size can go from half to four times the default |
-| Icon editor | Website icon, image, or text. Drag to position, zoom out or in, and the faded parts show what will be hidden. Tile background colour (including transparent) |
+| Icon editor | Image (the default tab), text, or website icons. Drag to position, zoom out or in, and the faded parts show what will be hidden. Tile background colour (including transparent). Website icons are offered only when **Settings → Icons → "Fetch icons from third-party sources"** is on (it is off by default and asks for confirmation when enabled); with it off, a site icon falls back to its first letter on a glass tile |
 | Fonts | Outfit for headings and buttons, Inter for everything else |
-| Page turn | Nine animations: slide, slide ease-in, kick back, fade, zoom, flip, carousel, drop, blur |
+| Page turn | Nine animations: slide, slide ease-in, kick back, fade, zoom, flip, carousel, drop, blur. While an icon is dragged, hovering the invisible strips beside the grid turns the page |
 | Wallpaper | Solid colour, or a local image, GIF or video file (files are stored in IndexedDB, up to 40 MB for images and 300 MB for video), or a link to an image, GIF or video. Scheduled switching, dim and blur. Videos pause when the tab is hidden |
 | Backup | Export everything to JSON, import with overwrite or merge, restore default settings |
 
@@ -122,7 +124,9 @@ tests/e2e-smoke.mjs      browser test that loads the extension and clicks throug
 tests/e2e-features.mjs   browser test for wallpaper, icon editor and page turns
 tests/screenshots.mjs    takes screenshots of the main states into ./screenshots
 scripts/make-icons.mjs   generates placeholder PNG icons
+scripts/make-chrome.mjs  builds the Chrome package (zip) into release/
 scripts/make-firefox.mjs builds the Firefox package (zip + xpi) into release/
+scripts/make-source.mjs  builds the AMO source package (zip) into release/
 ```
 
 ## Develop and test
@@ -135,8 +139,12 @@ npx eslint .           # lint
 node tests/e2e-smoke.mjs   # loads the unpacked extension in a real browser
 node tests/e2e-features.mjs  # wallpaper library, custom icons, icon editor, page turns
 node tests/screenshots.mjs # writes screenshots to ./screenshots
+node scripts/make-chrome.mjs   # builds release/NewGrid-<version>.zip (Chrome Web Store upload)
 node scripts/make-firefox.mjs  # builds release/NewGrid-<version>-firefox.zip and .xpi
+node scripts/make-source.mjs   # builds release/NewGrid-<version>-firefox-source.zip for AMO review
 ```
+
+A release is a version bump in `manifest.json` and `package.json` followed by the three build scripts.
 
 The browser tests use `puppeteer-core`. Chrome 137+ branded builds removed `--load-extension`, so the tests default to Microsoft Edge. Set `CHROME_PATH` to another Chromium build that still supports it, such as Chrome for Testing.
 

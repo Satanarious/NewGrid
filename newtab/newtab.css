@@ -47,6 +47,19 @@ input, select, textarea {
   border-radius: 8px;
   padding: 6px 8px;
 }
+/* Selects look like the rest of the UI: glass background, quiet chevron, dark list. */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 10px;
+  padding: 6px 30px 6px 10px;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'><path d='M5 9l7 7 7-7' fill='none' stroke='%23dddddd' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+}
+select:focus { outline: 1px solid #8ab4ff; outline-offset: 1px; }
+select option { background: rgb(24, 28, 42); color: var(--font-color); }
 input[type="checkbox"], input[type="radio"], input[type="range"], input[type="color"] { background: none; border: 0; padding: 0; }
 input[type="range"] { accent-color: #8ab4ff; }
 input[type="checkbox"] { accent-color: #8ab4ff; width: 16px; height: 16px; }
@@ -113,8 +126,9 @@ input[type="checkbox"] { accent-color: #8ab4ff; width: 16px; height: 16px; }
   align-items: center;
   justify-content: center;
   font-size: 18px;
+  transition: filter 0.15s, transform 0.15s;
 }
-.icon-btn:hover { filter: brightness(1.2); }
+.icon-btn:hover { filter: brightness(1.2); transform: translateY(-1px); }
 
 /* Screen zoom uses CSS zoom with compensating sizes, so the page never overflows the window. */
 main#main {
@@ -170,7 +184,9 @@ main#main {
   color: #222;
   opacity: var(--search-opacity);
   isolation: isolate;
+  transition: box-shadow 0.25s;
 }
+.search-card:focus-within { box-shadow: 0 4px 18px rgba(74, 144, 226, 0.35); }
 .search-card.shadow { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2); }
 .search-card.hide-button .search-submit { display: none; }
 .search-engine { position: relative; display: flex; flex-shrink: 0; }
@@ -198,8 +214,12 @@ main#main {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  animation: menuIn 0.16s ease;
 }
-.menu button { display: block; width: 100%; text-align: left; padding: 8px 14px; color: var(--font-color); font-family: var(--font-body); font-size: 13px; }
+@keyframes menuIn {
+  from { opacity: 0; transform: translateY(-6px); }
+}
+.menu button { display: block; width: 100%; text-align: left; padding: 8px 14px; color: var(--font-color); font-family: var(--font-body); font-size: 13px; transition: background 0.12s; }
 .menu button:hover, .menu button.active { background: rgba(255, 255, 255, 0.14); }
 #search-input {
   -webkit-appearance: none;
@@ -259,9 +279,13 @@ main#main {
   min-height: 0;
 }
 .cell.empty.drop-before { outline: 2px dashed rgba(255, 255, 255, 0.4); outline-offset: -4px; border-radius: 18px; }
+.icon { cursor: pointer; }
 .icon.dragging { opacity: 0.4; }
 .icon.drop-before::before { content: ''; position: absolute; left: -6px; top: 10%; bottom: 40%; width: 3px; background: #8ab4ff; border-radius: 2px; }
-.icon.drop-merge .icon-content { outline: 3px solid #8ab4ff; outline-offset: 3px; }
+.icon.drop-merge .icon-content { outline: 3px solid #8ab4ff; outline-offset: 3px; animation: mergePulse 1.1s ease infinite; }
+@keyframes mergePulse {
+  50% { outline-color: rgba(255, 255, 255, 0.35); }
+}
 
 /* The tile. Its glyph (favicon or letter) follows "Icon size" and may overflow the tile. */
 .icon-content {
@@ -284,6 +308,7 @@ main#main {
   flex-shrink: 0;
 }
 .icon:hover .icon-content:not(.clear) { filter: brightness(1.08); }
+.icon:hover .icon-content { transform: translateY(-4px) scale(1.03); }
 .icon-shadow .icon-content:not(.clear) { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 10px 26px rgba(0, 0, 0, 0.35); }
 /* Transparent tiles: no glass, no shadow, so nothing shows behind the icon. */
 .icon-content.clear, .mini-cell .icon-content.clear {
@@ -312,7 +337,9 @@ main#main {
   height: 34px;
   padding-top: 8px;
   box-sizing: border-box;
-  max-width: 100%;
+  /* Wider than the tile, so a small window change never starts trimming the text. */
+  width: calc(var(--t) * 1.35);
+  max-width: none;
   font-size: calc(var(--font-size) * 1px);
   color: var(--font-color);
   text-align: center;
@@ -347,28 +374,64 @@ main#main {
   from { transform: scale(0); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+/* Staggered boot: each icon pops in a beat later than the previous one. */
+.site-items.icon-stagger .icon {
+  animation: iconPop 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation-delay: calc(var(--stagger, 0) * 14ms);
+}
+@keyframes iconPop {
+  from { transform: translateY(12px) scale(0.7); opacity: 0; }
+}
 
 .site-dots { display: flex; gap: 8px; justify-content: center; padding: 10px 0 0; }
-.site-dots .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.35); }
-.site-dots .dot.active { background: #fff; }
+.site-dots .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.35); transition: background 0.2s, transform 0.15s; }
+.site-dots .dot:hover { transform: scale(1.35); }
+.site-dots .dot.active { background: #fff; transform: scale(1.2); }
 
 .pager {
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
   z-index: 3;
-  width: 40px;
-  height: 56px;
-  font-size: 32px;
+  width: 52px;
+  height: 84px;
+  border-radius: 999px;
+  align-items: center;
+  justify-content: center;
   color: #fff;
-  opacity: 0.6;
+  opacity: 0.75;
+  display: none;
+  background: rgba(20, 24, 36, 0.45);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+}
+.pager svg { width: 34px; height: 34px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.pager:hover:not(:disabled) { opacity: 1; background: rgba(20, 24, 36, 0.65); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); transform: translateY(-50%) scale(1.08); }
+.pager:active:not(:disabled) { transform: translateY(-50%) scale(0.96); }
+.pager:disabled { opacity: 0.18; cursor: default; }
+#prev { left: 8px; }
+#next { right: 8px; }
+body.show-pager .pager { display: flex; }
+
+/* Invisible full-height strips beside the grid. Armed only while something is
+   dragged; hovering them turns the page, so a drag alone reaches the next page. */
+.drag-zone {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 56px;
+  z-index: 4;
+  background: transparent;
   display: none;
 }
-.pager:hover { opacity: 1; }
-.pager:disabled { opacity: 0.15; cursor: default; }
-#prev { left: 6px; }
-#next { right: 6px; }
-body.show-pager .pager { display: block; }
+.drag-zone.left { left: 0; border-radius: 0 999px 999px 0; }
+.drag-zone.right { right: 0; border-radius: 999px 0 0 999px; }
+body.drag-paging .drag-zone { display: block; }
+body.drag-paging .drag-zone:hover { background: linear-gradient(90deg, rgba(138, 180, 255, 0.12), transparent); }
+body.drag-paging .drag-zone.right:hover { background: linear-gradient(-90deg, rgba(138, 180, 255, 0.12), transparent); }
 
 /* ---- overlays ---- */
 .overlay {
@@ -392,6 +455,10 @@ body.show-pager .pager { display: block; }
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  animation: boxIn 0.22s ease;
+}
+@keyframes boxIn {
+  from { opacity: 0; transform: scale(0.94) translateY(12px); }
 }
 .plugin-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.12); }
 .editor-title { margin: 0; font-size: 18px; font-weight: 600; }
@@ -400,6 +467,10 @@ body.show-pager .pager { display: block; }
 /* The folder grid is up to 6 columns of 120px tiles and 4 rows tall. The dialog keeps its
    minimum width for a few icons and grows with the columns; extra rows scroll inside .folder-items. */
 .folder-box-modal {
+  /* More opaque and less blurred than the default .box, so folder contents read clearly. */
+  background: rgba(20, 24, 36, 0.85);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
   width: min(max(560px, calc(var(--folder-cols, 1) * 120px + (var(--folder-cols, 1) - 1) * 16px + 44px)), 92vw);
   max-height: calc(100vh - 48px);
 }
@@ -415,6 +486,8 @@ body.show-pager .pager { display: block; }
 }
 .folder-items .icon { position: relative; width: 120px; height: auto; }
 .folder-items .icon-content { width: 96px; }
+.folder-items .icon-text { font-size: calc(var(--icon-scale) * 36cqmin); }
+.folder-items .icon-name { width: 130%; max-width: none; }
 .folder-actions {
   display: flex;
   gap: 10px;
@@ -536,7 +609,8 @@ body.show-pager .pager { display: block; }
 .ed-text-controls .colour { display: flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 12px; }
 .ed-palette-wrap .label { display: block; font-size: 12px; opacity: 0.7; margin-bottom: 6px; font-family: var(--font-head); }
 .palette { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.swatch { width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.3); }
+.swatch { width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.3); transition: transform 0.15s; }
+.swatch:hover { transform: scale(1.15); }
 .swatch.active { outline: 2px solid #8ab4ff; outline-offset: 2px; }
 .swatch.none { background: repeating-conic-gradient(#5a5f70 0 25%, #3b3f4e 0 50%) 0 0 / 10px 10px; }
 #ed-custom-bg, #wp-custom, #ed-text-color { width: 26px; height: 26px; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; }
@@ -587,7 +661,8 @@ button:hover { filter: brightness(1.15); }
 .choice label { display: flex; align-items: center; gap: 8px; }
 .wp-group .row { justify-content: flex-start; }
 .library { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
-.library figure { margin: 0; background: rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 4px; }
+.library figure { margin: 0; background: rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 4px; transition: transform 0.15s; }
+.library figure:hover { transform: translateY(-2px); }
 .library figure.active { outline: 2px solid #8ab4ff; }
 .library .thumb { width: 100%; height: 64px; object-fit: cover; border-radius: 7px; cursor: pointer; display: block; background: #222; }
 .library figcaption { font-size: 11px; display: flex; justify-content: space-between; gap: 4px; align-items: center; margin-top: 4px; }
@@ -635,7 +710,9 @@ button:hover { filter: brightness(1.15); }
   .search-wrap { width: min(640px, 92vw); }
   .engine-btn { padding-inline: 10px; }
   .search-submit { padding-inline: 12px; }
-  .pager { width: 30px; height: 44px; font-size: 24px; }
+  .pager { width: 40px; height: 64px; }
+  .pager svg { width: 24px; height: 24px; }
+  .drag-zone { width: 40px; }
 
   /* Folder dialog: smaller tiles so the columns fit narrow windows. */
   .folder-box-modal { width: 94vw; }

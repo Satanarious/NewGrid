@@ -64,6 +64,8 @@ const SECTIONS = [
       ['bool', 'icon.startAnimation', 'Start animation'],
       ['bool', 'icon.miniMode', 'Minimalist mode (hide icons)'],
       ['bool', 'icon.isHideIconName', 'Hide icon names'],
+      ['note', 'When on, website icons are fetched from third-party services (icon.horse and Google). Everything else stays local.'],
+      ['bool', 'icon.thirdPartyIcons', 'Fetch icons from third-party sources'],
     ],
   },
   {
@@ -117,6 +119,8 @@ export function toggleDrawer() {
 
 function controlHtml(item) {
   const [type, path, label, a, b, c, when] = item;
+  // A note has no path: its text is the second slot.
+  if (type === 'note') return `<p class="hint">${esc(path)}</p>`;
   if (when && !getPath(state.setting, when)) return '';
   const id = `set-${path.replace(/\./g, '-')}`;
   const value = getPath(state.setting, path);
@@ -408,6 +412,18 @@ function bindSchemaInput(input) {
     else value = input.value;
     if (input.type === 'range') {
       input.parentElement.querySelector('output').textContent = Number(value).toFixed(input.step < 1 ? 2 : 0);
+    }
+    // Turning third-party icon fetching on asks first; refusing reverts the checkbox untouched.
+    if (path === 'icon.thirdPartyIcons' && value === true && !state.setting.icon.thirdPartyIcons) {
+      const ok = await confirmDialog({
+        title: 'Third-party icon sources',
+        message: 'This would fetch icons and make requests from 3rd party sources, only click check if you are okay with this.',
+        okText: 'Enable',
+      });
+      if (!ok) {
+        input.checked = false;
+        return;
+      }
     }
     const { setting, layoutChanged } = applyChange(state.setting, path, value);
     await saveSetting(setting);
