@@ -125,6 +125,7 @@ tests/e2e-features.mjs   browser test for wallpaper, icon editor and page turns
 tests/screenshots.mjs    takes screenshots of the main states into ./screenshots
 scripts/make-icons.mjs   generates placeholder PNG icons
 scripts/make-chrome.mjs  builds the Chrome package (zip) into release/
+scripts/make-crx.mjs     signs release/NewGrid-<version>.zip into a .crx (manual installs)
 scripts/make-firefox.mjs builds the Firefox package (zip + xpi) into release/
 scripts/make-source.mjs  builds the AMO source package (zip) into release/
 ```
@@ -140,11 +141,14 @@ node tests/e2e-smoke.mjs   # loads the unpacked extension in a real browser
 node tests/e2e-features.mjs  # wallpaper library, custom icons, icon editor, page turns
 node tests/screenshots.mjs # writes screenshots to ./screenshots
 node scripts/make-chrome.mjs   # builds release/NewGrid-<version>.zip (Chrome Web Store upload)
+node scripts/make-crx.mjs      # signs that zip into release/NewGrid-<version>.crx (sideloading)
 node scripts/make-firefox.mjs  # builds release/NewGrid-<version>-firefox.zip and .xpi
 node scripts/make-source.mjs   # builds release/NewGrid-<version>-firefox-source.zip for AMO review
 ```
 
-A release is a version bump in `manifest.json` and `package.json` followed by the three build scripts.
+A release is a version bump in `manifest.json` and `package.json` followed by the four build scripts.
+
+The CRX is signed with a private key (`NEWGRID_PEM`). Its extension ID is derived from that key, so if the Chrome Web Store assigned a different ID to the zip upload, a CRX install won't replace or update the store install — the store listing keeps updating from the zip. The CRX is only for manual installs.
 
 The browser tests use `puppeteer-core`. Chrome 137+ branded builds removed `--load-extension`, so the tests default to Microsoft Edge. Set `CHROME_PATH` to another Chromium build that still supports it, such as Chrome for Testing.
 
