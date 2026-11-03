@@ -467,10 +467,6 @@ body.drag-paging .drag-zone.right:hover { background: linear-gradient(-90deg, rg
 /* The folder grid is up to 6 columns of 120px tiles and 4 rows tall. The dialog keeps its
    minimum width for a few icons and grows with the columns; extra rows scroll inside .folder-items. */
 .folder-box-modal {
-  /* More opaque and less blurred than the default .box, so folder contents read clearly. */
-  background: rgba(20, 24, 36, 0.85);
-  backdrop-filter: blur(12px) saturate(140%);
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
   width: min(max(560px, calc(var(--folder-cols, 1) * 120px + (var(--folder-cols, 1) - 1) * 16px + 44px)), 92vw);
   max-height: calc(100vh - 48px);
 }
