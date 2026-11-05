@@ -13,6 +13,9 @@ A local-only Chrome/Edge/Firefox new tab extension which allows for a grid-based
 <a href="https://smollaunch.com" target="_blank" rel="noopener">
   <img src="https://smollaunch.com/badges/featured.svg" alt="NewGrid — Featured on Smol Launch" loading="lazy" width="250" height="60" />
 </a>
+<a href="https://tinylaunch.com" target="_blank" rel="noopener">
+    <img src="https://tinylaunch.com/tinylaunch_badge_launching_soon.svg" alt="TinyLaunch Badge" style="width:202px; height:auto;" />
+</a>
 <a href="https://www.producthunt.com/products/newgrid?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-newgrid" target="_blank" rel="noopener noreferrer"><img alt="NewGrid - Less Clutter. More Control. | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1299983&amp;theme=light&amp;t=1793854811918"></a>
 </p>
 
