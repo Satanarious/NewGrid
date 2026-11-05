@@ -36,16 +36,12 @@ A local-only Chrome/Edge/Firefox new tab extension which allows for a grid-based
 Temporary add-ons are removed when Firefox closes, and a new-tab override loaded this way resets between sessions — for daily use, install the signed version from AMO.
 
 <p align="center">
-<table>
-<tr>
-<td><a href="https://chromewebstore.google.com/detail/newgrid/blmoejlifahndadkjaiogklgbgfifoca">
+<a href="https://chromewebstore.google.com/detail/newgrid/blmoejlifahndadkjaiogklgbgfifoca">
 <img src="icons\chrome_web_store.png" width=220></img>
 </a>
-<td><a href="https://addons.mozilla.org/en-US/firefox/addon/newgrid/">
+<a href="https://addons.mozilla.org/en-US/firefox/addon/newgrid/">
 <img src="icons\firefox_add_on.svg" width=180></img>
 </a>
-</tr>
-<table>
 </p>
 
 # Screenshots
