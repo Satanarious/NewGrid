@@ -6,6 +6,7 @@
 </p>
 
 <h1 align="center">NewGrid</h1>
+<h3 align="center">Less Clutter. More Control.</h3>
 
 A local-only Chrome/Edge/Firefox new tab extension which allows for a grid-based layout of your favourite websites. No accounts, backup locally. Everything lives in `chrome.storage.local` and IndexedDB.
 
