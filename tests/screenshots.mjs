@@ -31,10 +31,15 @@ try {
   await pause(600);
   await page.screenshot({ path: join(outDir, '1-main.png') });
 
-  await page.click('#engine-btn');
-  await pause(300);
-  await page.screenshot({ path: join(outDir, '2-engine-menu.png') });
-  await page.click('body', { offset: { x: 5, y: 5 } });
+  // The engine menu only exists where the search box picks engines (Firefox builds);
+  // on Chromium the search goes through the browser default provider.
+  const engineBtn = await page.$('#engine-btn');
+  if (engineBtn && await page.$eval('#engine-btn', (el) => getComputedStyle(el.parentElement).display !== 'none')) {
+    await page.click('#engine-btn');
+    await pause(300);
+    await page.screenshot({ path: join(outDir, '2-engine-menu.png') });
+    await page.click('body', { offset: { x: 5, y: 5 } });
+  }
 
   await sw.evaluate(async () => {
     const { ['store-setting']: s } = await chrome.storage.local.get('store-setting');

@@ -2,8 +2,8 @@ import { state, hooks, loadAll, listenForChanges, saveSearch } from './context.j
 import { renderGrid, bindGrid, goToPage, turnPage, openEditor, closeFolder } from './grid.js';
 import { closeIconEditor } from './icon-editor.js';
 import { bindDrawerShell, closeDrawer, isDrawerOpen, refreshWallpaperCard } from './drawer.js';
-import { $, esc, html } from '../../shared/util.js';
-import { allEngines, findEngine, availableTypes, engineTemplate, buildSearchUrl, SEARCH_TYPE_LABELS } from '../../shared/search.js';
+import { $, esc, html, hasChromeSearch } from '../../shared/util.js';
+import { allEngines, findEngine, availableTypes, engineTemplate, buildSearchUrl, SEARCH_TYPE_LABELS, DEFAULT_ENGINE_UUID } from '../../shared/search.js';
 import { effectiveLayout } from '../../shared/settings.js';
 import { initWallpaper, renderWallpaper, autoSwitchIfDue } from './wallpaper.js';
 
@@ -54,10 +54,12 @@ function renderSearch() {
   form.classList.toggle('shadow', !!s.shadow);
   form.classList.toggle('hide-button', !!s.hideButton);
   wrap.classList.toggle('hide-category', !!s.hideCategory);
+  // The label always shows the selected engine; on Chromium Enter goes through
+  // chrome.search only while that engine is the built-in default (see submit below).
   const engine = findEngine(state.search, state.search.searchEngine.current);
+  $('#engine-btn').textContent = `${engine.name} ▾`;
   const types = availableTypes(engine);
   if (!types.includes(searchType)) searchType = 'html';
-  $('#engine-btn').textContent = `${engine.name} ▾`;
   $('#type-tabs').replaceChildren(html(types
     .map((t) => `<button type="button" data-type="${t}" class="${t === searchType ? 'active' : ''}">${SEARCH_TYPE_LABELS[t]}</button>`)
     .join('')));
@@ -98,6 +100,14 @@ function bindSearch() {
     if (!q) return;
     const engine = findEngine(state.search, state.search.searchEngine.current);
     const url = buildSearchUrl(engineTemplate(engine, searchType), q);
+    // While the built-in default engine is selected on the Web tab, Enter goes through
+    // chrome.search so the query follows the browser's default search settings - the same
+    // design as other approved new-tab extensions. Any other engine or category is opened
+    // directly from its URL.
+    if (hasChromeSearch() && searchType === 'html' && engine.uuid === DEFAULT_ENGINE_UUID) {
+      chrome.search.query({ text: q, disposition: state.setting.link.search ? 'NEW_TAB' : 'CURRENT_TAB' });
+      return;
+    }
     if (state.setting.link.search) chrome.tabs.create({ url });
     else window.location.href = url;
   });

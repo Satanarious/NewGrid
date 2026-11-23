@@ -1,6 +1,6 @@
 # NewGrid Privacy Policy
 
-Last updated: November 2, 2026
+Last updated: November 18, 2026
 
 NewGrid is a Chrome, Edge, and Firefox extension that replaces the new tab page with a grid of your favourite websites, plus search, wallpapers, and local backup.
 
@@ -28,7 +28,7 @@ NewGrid stays local by default. The only network requests it can make are the on
 
   These services receive the hostname and your IP address, as with any web request. They are governed by their own privacy policies. NewGrid does not send them any other information, and no account identifier is included.
 - **Wallpaper links:** If you set a wallpaper to a web link, your browser loads that image or video from the address you entered.
-- **Search:** When you search, your browser opens the search engine you selected, and the search is handled by that provider.
+- **Search:** The search bar shows the engine you selected. While that is the built-in default (Google) on the Web tab, pressing Enter sends your query through Chrome's official search API, so results come from whatever provider you set as default in your browser settings. Any other engine — or any category such as Images — opens that engine's website directly with your query, exactly as if you had typed its address yourself. On Firefox, the search always opens the selected engine, and the search is handled by that provider.
 
 ## Current tab access
 
@@ -39,6 +39,7 @@ NewGrid requests the `activeTab` permission. It reads the URL and title of the c
 - `storage`: saves your settings and content on this device.
 - `unlimitedStorage`: allows large wallpaper files to be stored in IndexedDB (Chromium browsers only; the Firefox build omits it because Firefox has no storage quota to lift).
 - `activeTab`: reads the current tab when you use "Add this page".
+- `search`: lets the new tab search box submit through your browser's default search provider with the official search API. It grants no access to your browsing data (Chromium only; the Firefox build omits it).
 
 ## What NewGrid does not do
 

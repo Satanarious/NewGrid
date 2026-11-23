@@ -77,6 +77,7 @@ Differences from the Chrome build:
 | `background.service_worker` | `background.scripts` event page |
 | `minimum_chrome_version: "105"` | removed |
 | `unlimitedStorage` permission | removed (Firefox has no storage quota to lift) |
+| `search` permission (default-provider search) | removed (Gecko has no `chrome.search`; the box uses its own engine menu) |
 | extension ID from the CRX signing key | fixed Gecko ID `{e5ad6c4e-e78e-4644-80c1-726eadd24e04}` |
 | — | `data_collection_permissions: required: ["none"]` (AMO requirement; see [PRIVACY.md](PRIVACY.md)) |
 
@@ -94,7 +95,7 @@ When you submit a new version to [AMO](https://addons.mozilla.org/developers/), 
 | Folders | Flip-open dialog, rename, open all, release and delete (both confirmed). The dialog shows up to 6 × 4 icons and scrolls beyond that. The tile shows the first nine icons in a centred 3 × 3 grid at 80% size |
 | Sites | Add (URL, name, favicon, or colour and two-letter text, or a custom image up to 15 MB), edit, delete |
 | Settings | A right-side panel that slides in from the cog. Each group is its own card: Links, View, Layout, Icons, Search box, Font, Wallpaper, Custom search engines, Permissions, Backup |
-| Search | Built-in engines (Google, Bing, DuckDuckGo, Yahoo, Baidu, Yandex, Sogou, 360) in the engine menu. Result types (Web, Images, News, Videos, Maps) appear above the search box. Custom engines with `%s` are added in Settings. Box size can go from half to four times the default |
+| Search | The engine menu (DuckDuckGo, Ecosia, PrivacyWall, Google, Qwant, Bing, Brave, Perplexity, Yahoo, Baidu, Yandex, Sogou, 360, plus your own with `%s`) switches the default engine and shows result-type tabs (Web, Images, News, Videos, Maps). While the built-in default (Google) is selected on the Web tab, Enter goes through the browser's **default search provider** via the `chrome.search` API; any other engine or category is searched directly on its site |
 | Icon editor | Image (the default tab), text, or website icons. Drag to position, zoom out or in, and the faded parts show what will be hidden. Tile background colour (including transparent). Website icons are offered only when **Settings → Icons → "Fetch icons from third-party sources"** is on (it is off by default and asks for confirmation when enabled); with it off, a site icon falls back to its first letter on a glass tile |
 | Fonts | Outfit for headings and buttons, Inter for everything else |
 | Page turn | Nine animations: slide, slide ease-in, kick back, fade, zoom, flip, carousel, drop, blur. While an icon is dragged, hovering the invisible strips beside the grid turns the page |

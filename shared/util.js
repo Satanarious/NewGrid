@@ -1,6 +1,13 @@
 export const $ = (sel, root = document) => root.querySelector(sel);
 export const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
+// Chromium builds have the chrome.search API, so the new-tab search box goes through the
+// browser's default search provider (a Chrome Web Store requirement). Firefox does not
+// implement it, so there the box keeps its own engine menu.
+export function hasChromeSearch() {
+  return typeof chrome !== 'undefined' && typeof chrome.search?.query === 'function';
+}
+
 export function esc(value) {
   return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }

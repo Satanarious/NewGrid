@@ -23,7 +23,9 @@ const geckoManifest = { ...manifest };
 delete geckoManifest.minimum_chrome_version;
 delete geckoManifest.background.service_worker;
 geckoManifest.background = { scripts: ['background.js'], type: 'module' };
-geckoManifest.permissions = geckoManifest.permissions.filter((p) => p !== 'unlimitedStorage'); // Firefox has no storage quota to lift; AMO lint flags it.
+geckoManifest.permissions = geckoManifest.permissions
+  .filter((p) => p !== 'unlimitedStorage') // Firefox has no storage quota to lift; AMO lint flags it.
+  .filter((p) => p !== 'search'); // Gecko has no chrome.search API; the permission is Chromium-only.
 geckoManifest.browser_specific_settings = {
   gecko: {
     id: GECKO_ID,

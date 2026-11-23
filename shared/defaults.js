@@ -18,6 +18,21 @@ export const DEFAULT_SETTING = {
 
 export const BUILTIN_ENGINES = [
   {
+    uuid: 'duckduckgo', name: 'DuckDuckGo', desc: 'Privacy-focused search',
+    types: { html: 'https://duckduckgo.com/?q=%s', photos: 'https://duckduckgo.com/?q=%s&iax=images&ia=images' },
+  },
+  {
+    uuid: 'ecosia', name: 'Ecosia', desc: 'Plant trees while you search',
+    types: {
+      html: 'https://www.ecosia.org/search?q=%s',
+      photos: 'https://www.ecosia.org/images?q=%s',
+    },
+  },
+  {
+    uuid: 'privacywall', name: 'PrivacyWall', desc: 'Private search engine',
+    types: { html: 'https://search.privacywall.org/?q=%s' },
+  },
+  {
     uuid: 'google', name: 'Google', desc: 'Google Search',
     types: {
       html: 'https://www.google.com/search?q=%s',
@@ -25,6 +40,16 @@ export const BUILTIN_ENGINES = [
       news: 'https://www.google.com/search?tbm=nws&q=%s',
       videos: 'https://www.google.com/search?tbm=vid&q=%s',
       maps: 'https://www.google.com/maps/search/%s',
+    },
+  },
+  {
+    uuid: 'qwant', name: 'Qwant', desc: 'European search engine',
+    types: {
+      html: 'https://www.qwant.com/?q=%s',
+      photos: 'https://www.qwant.com/?q=%s&t=images',
+      news: 'https://www.qwant.com/?q=%s&t=news',
+      videos: 'https://www.qwant.com/?q=%s&t=videos',
+      maps: 'https://www.qwant.com/maps/?q=%s',
     },
   },
   {
@@ -38,8 +63,17 @@ export const BUILTIN_ENGINES = [
     },
   },
   {
-    uuid: 'duckduckgo', name: 'DuckDuckGo', desc: 'Privacy-focused search',
-    types: { html: 'https://duckduckgo.com/?q=%s', photos: 'https://duckduckgo.com/?q=%s&iax=images&ia=images' },
+    uuid: 'brave', name: 'Brave', desc: 'Independent and private search',
+    types: {
+      html: 'https://search.brave.com/search?q=%s',
+      photos: 'https://search.brave.com/images/search?q=%s',
+      news: 'https://search.brave.com/news/search?q=%s',
+      videos: 'https://search.brave.com/videos/search?q=%s',
+    },
+  },
+  {
+    uuid: 'perplexity', name: 'Perplexity', desc: 'AI answer engine',
+    types: { html: 'https://www.perplexity.ai/search?q=%s' },
   },
   {
     uuid: 'yahoo', name: 'Yahoo', desc: 'Yahoo Search',

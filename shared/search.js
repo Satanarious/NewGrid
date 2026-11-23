@@ -1,4 +1,8 @@
-import { BUILTIN_ENGINES } from './defaults.js';
+import { BUILTIN_ENGINES, DEFAULT_SEARCH } from './defaults.js';
+
+// The engine that ships as the default selection. While it is selected on the Web tab,
+// Chromium builds send Enter through chrome.search (the browser's default provider).
+export const DEFAULT_ENGINE_UUID = DEFAULT_SEARCH.searchEngine.current;
 
 export const SEARCH_TYPES = ['html', 'photos', 'news', 'videos', 'maps'];
 

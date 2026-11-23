@@ -54,11 +54,67 @@ try {
     assert.equal(n, 3);
   });
 
-  await step('search engine menu lists built-in engines', async () => {
+  await step('search: engine menu lists all 13 built-ins', async () => {
     await page.click('#engine-btn');
     const n = await page.$$eval('#engine-menu [data-engine]', (els) => els.length);
-    assert.equal(n, 8);
+    assert.equal(n, 13);
     await page.click('body');
+  });
+
+  await step('search: default label, menu persists, Enter uses chrome.search only for the default engine', async () => {
+    // A separate page so the results navigation cannot disturb the later steps.
+    await sw.evaluate(async () => {
+      const { ['store-setting']: s = {} } = await chrome.storage.local.get('store-setting');
+      s.setting = s.setting || {};
+      s.setting.link = { ...(s.setting.link || {}), search: false }; // CURRENT_TAB keeps the assertion on this page
+      await chrome.storage.local.set({ 'store-setting': s });
+    });
+    const page2 = await browser.newPage();
+    await page2.setViewport({ width: 1280, height: 800 });
+    await page2.goto(`chrome-extension://${extId}/newtab/index.html`, { waitUntil: 'domcontentloaded' });
+    await page2.waitForSelector('#site-items .icon', { timeout: 10000 });
+    try {
+      // The label shows the selected engine (built-in default: Google) with its category tabs.
+      assert.equal(await page2.$eval('#engine-btn', (el) => el.textContent.trim()), 'Google ▾');
+      assert.equal((await page2.$$('#type-tabs button')).length, 5, 'category tabs for Google');
+
+      // Picking an engine in the menu persists it as the current engine.
+      await page2.click('#engine-btn');
+      await page2.click('#engine-menu [data-engine="brave"]');
+      await page2.waitForFunction(() => document.getElementById('engine-btn').textContent.trim() === 'Brave ▾', { timeout: 5000 });
+      const stored = await sw.evaluate(async () => (await chrome.storage.local.get('store-search'))['store-search']);
+      assert.equal(stored.searchEngine.current, 'brave', 'menu selection persisted');
+
+      // A non-default engine searches directly through its own URL.
+      let nav = page2.waitForNavigation({ timeout: 20000 });
+      await page2.focus('#search-input');
+      await page2.type('#search-input', 'opencode test');
+      await page2.keyboard.press('Enter');
+      await nav;
+      assert.ok(page2.url().startsWith('https://search.brave.com/search'), `expected Brave directly, got ${page2.url()}`);
+
+      // Back on the built-in default engine, Enter goes through chrome.search, so the
+      // results follow the browser's default provider (Bing on a fresh Edge profile).
+      await page2.goto(`chrome-extension://${extId}/newtab/index.html`, { waitUntil: 'domcontentloaded' });
+      await page2.waitForSelector('#site-items .icon', { timeout: 10000 });
+      await page2.click('#engine-btn');
+      await page2.click('#engine-menu [data-engine="google"]');
+      await page2.waitForFunction(() => document.getElementById('engine-btn').textContent.trim() === 'Google ▾', { timeout: 5000 });
+      nav = page2.waitForNavigation({ timeout: 20000 });
+      await page2.focus('#search-input');
+      await page2.type('#search-input', 'opencode test');
+      await page2.keyboard.press('Enter');
+      await nav;
+      assert.ok(/bing\.com|google\.com/.test(page2.url()), `default engine should search via chrome.search, got ${page2.url()}`);
+      assert.ok(page2.url().includes('opencode'), 'query carried to the provider');
+    } finally {
+      await page2.close();
+      await sw.evaluate(async () => {
+        const { ['store-setting']: s } = await chrome.storage.local.get('store-setting');
+        s.setting.link.search = true;
+        await chrome.storage.local.set({ 'store-setting': s });
+      });
+    }
   });
 
   await step('add site through the editor persists to storage', async () => {
